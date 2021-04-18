@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: space-service
+  config.import: configserver:http://space-config-server:8082
+  profiles:
+    active: default
+
+server:
+  port: 8081
+

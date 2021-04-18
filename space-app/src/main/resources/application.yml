@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: space-app
+  config.import: configserver:http://space-config-server:8082
+  profiles:
+    active: local
+
+server:
+  port: 8080
+
+management:
+  endpoint:
+    web:
+      exposure:
+        include: "*"

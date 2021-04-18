@@ -1,0 +1,77 @@
+version: '3.8'
+
+networks:
+  back-end:
+
+services:
+
+  prometheus:
+    image: prom/prometheus:v2.22.2
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - 9090:9090
+
+  grafana:
+    image: grafana/grafana:7.3.2
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+
+  database:
+    image: mysql:5.7
+    restart: always
+    environment:
+         MYSQL_DATABASE: 'spacedb'
+         MYSQL_USER: ${DB_USER}
+         MYSQL_PASSWORD: ${DB_PASSWORD}
+         MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    ports:
+      - '3306:3306'
+    networks:
+      - back-end
+
+  space-config-server:
+    container_name: space-config-server
+    build:
+      context: ./space-config-server
+    ports: 
+      - 8082:8082
+    restart: on-failure
+    networks:
+      - back-end
+
+  space-service:
+    container_name: space-service
+    build:
+      context: ./space-service
+    ports: 
+      - 8081:8081
+    restart: on-failure
+    networks:
+      - back-end
+    depends_on:
+      - space-config-server
+
+  space-app:
+    container_name: space-app
+    build:
+      context: ./space-app
+    ports:
+      - 8080:8080
+    restart: on-failure
+    networks:
+      - back-end
+    depends_on:
+      - space-config-server
+      - database
+      - space-service
+      - prometheus
+      - grafana

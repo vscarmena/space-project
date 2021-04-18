@@ -1,0 +1,15 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: space-config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/vscarmena/space-config-repo
+          search-paths: '{application}'
+        fail-fast: true
+        retry:
+          max-attempts: 50
