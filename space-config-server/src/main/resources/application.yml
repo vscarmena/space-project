@@ -13,3 +13,6 @@ spring:
         fail-fast: true
         retry:
           max-attempts: 50
+
+encrypt:
+  key: fje83Ki8403
