@@ -11,6 +11,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.HashMap;
 
@@ -19,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ActiveProfiles("test")
 public class AstronautIntegrationTest {
 
     @LocalServerPort
@@ -78,7 +80,7 @@ public class AstronautIntegrationTest {
     @Test
     public void shouldReturn200_whenAAstronautIsModified() {
         Astronaut astronaut = createAstronaut(AstronautMother.getAstronaut());
-        astronaut.setName("NEIL ARMSTRONG");
+        astronaut.setName("NEIL A. ARMSTRONG --MODIFIED");
 
         Response response = with()
                 .body(astronaut)
@@ -90,7 +92,7 @@ public class AstronautIntegrationTest {
                 .response();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.jsonPath().getString("name")).isEqualTo("NEIL ARMSTRONG");
+        assertThat(response.jsonPath().getString("name")).isEqualTo("NEIL A. ARMSTRONG --MODIFIED");
     }
 
     @Test
